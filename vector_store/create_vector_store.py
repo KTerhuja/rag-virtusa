@@ -1,5 +1,8 @@
-from langchain_chroma import Chroma
 from embedding import embedding
+import pysqlite3
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+from langchain_chroma import Chroma
 
 def create_vector_store(texts, embedding_type):
     """
@@ -17,14 +20,17 @@ def create_vector_store(texts, embedding_type):
         ValueError: If an unsupported embedding type is provided.
     """
     if embedding_type == 'open_ai':
-        openai_embedding = embedding.load_embedding(texts, 'open_ai')
-        db = Chroma.from_documents(texts, openai_embedding)
+        openai_embedding = embedding.load_embedding('open_ai')
+        db = Chroma.from_documents(texts, openai_embedding, persist_directory= "vector_store")
         return db
     
     elif embedding_type == 'gemini':
-        gemini_embedding = embedding.load_embedding(texts, 'gemini')
-        db = Chroma.from_documents(texts, gemini_embedding)
-        return db
+        gemini_embedding = embedding.load_embedding('gemini')
+        db = Chroma.from_documents(texts, gemini_embedding, persist_directory= "./data")
+    
     
     else:
         raise ValueError(f"Unsupported embedding type: {embedding_type}")
+    
+
+

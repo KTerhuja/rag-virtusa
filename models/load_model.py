@@ -34,3 +34,5 @@ def load_llm(type):
             max_retries=2,
             google_api_key = google_api_key
         )
+
+        return llm

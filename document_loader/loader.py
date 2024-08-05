@@ -1,7 +1,7 @@
 from typing import Union
 from langchain_community.document_loaders import TextLoader, PyMuPDFLoader, DirectoryLoader
 
-def load_docs(path: str, doc_type: str) -> Union[str, list]:
+def load_docs(path: str, type: str) -> Union[str, list]:
     """
     Load documents from specified path based on document type.
 
@@ -16,14 +16,14 @@ def load_docs(path: str, doc_type: str) -> Union[str, list]:
     Raises:
         ValueError: If an unsupported document type is provided.
     """
-    if doc_type == 'text':
+    if type == 'text':
         loader = TextLoader(path)
-    elif doc_type == 'pdf':
+    elif type == 'pdf':
         loader = PyMuPDFLoader(path)
-    elif doc_type == 'folder':
+    elif type == 'folder':
         loader = DirectoryLoader(path, glob="**/*.txt", loader_cls=TextLoader)
     else:
-        raise ValueError(f"Unsupported document type: {doc_type}")
+        raise ValueError(f"Unsupported document type: {type}")
 
     loaded = loader.load()
     
