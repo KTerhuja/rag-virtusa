@@ -15,7 +15,7 @@ def split(docs, split_type):
     if split_type == 'character':
         text_splitter = CharacterTextSplitter(
             separator="\n\n",
-            chunk_size=1000,
+            chunk_size=1552,
             chunk_overlap=200,
             length_function=len,
             is_separator_regex=False

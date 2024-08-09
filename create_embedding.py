@@ -5,6 +5,7 @@ import pysqlite3
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 from langchain_chroma import Chroma
+from langchain_community.vectorstores import FAISS
 
 def create_vector_store(texts, embedding_type):
     """
@@ -28,7 +29,10 @@ def create_vector_store(texts, embedding_type):
     
     elif embedding_type == 'gemini':
         gemini_embedding = embedding.load_embedding('gemini')
-        db = Chroma.from_documents(texts, gemini_embedding, persist_directory= "./data/jll.sqlite3")
+        # db = Chroma.from_documents(texts, gemini_embedding, persist_directory= "./data")
+
+        db = FAISS.from_documents(texts, gemini_embedding)
+        db.save_local("data/faiss")
     
     
     else:
@@ -38,7 +42,7 @@ def create_vector_store(texts, embedding_type):
 if __name__ == "__main__":
 
     # Load the document pdf/text/folder of docs
-    docs = loader.load_docs('data/sample_doc.pdf', type='pdf')
+    docs = loader.load_docs('data/delio', type='folder')
 
     # Split the loaded document into chunks based on character/tokens
     split_texts = chunk.split(docs, 'character')
