@@ -3,6 +3,8 @@ import pysqlite3
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 from langchain_chroma import Chroma
+from langchain_community.vectorstores import FAISS
+
 
 def create_vector_store(texts, embedding_type):
     """
@@ -21,12 +23,18 @@ def create_vector_store(texts, embedding_type):
     """
     if embedding_type == 'open_ai':
         openai_embedding = embedding.load_embedding('open_ai')
-        db = Chroma.from_documents(texts, openai_embedding, persist_directory= "vector_store")
+        # db = Chroma.from_documents(texts, openai_embedding, persist_directory= "vector_store")
+        db = FAISS.from_documents(texts, openai_embedding)
+        db.save_local("data/faiss")
         return db
     
     elif embedding_type == 'gemini':
         gemini_embedding = embedding.load_embedding('gemini')
-        db = Chroma.from_documents(texts, gemini_embedding, persist_directory= "./data")
+        # db = Chroma.from_documents(texts, gemini_embedding, persist_directory= "./data")
+        db = FAISS.from_documents(texts, gemini_embedding)
+        db.save_local("data/faiss")
+
+        return db
     
     
     else:

@@ -21,7 +21,7 @@ def load_docs(path: str, type: str) -> Union[str, list]:
     elif type == 'pdf':
         loader = PyMuPDFLoader(path)
     elif type == 'folder':
-        loader = DirectoryLoader(path, glob="**/*.txt", loader_cls=TextLoader)
+        loader = DirectoryLoader(path, glob="**/*.pdf")
     else:
         raise ValueError(f"Unsupported document type: {type}")
 

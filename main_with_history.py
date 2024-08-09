@@ -15,6 +15,7 @@ from langchain.chains import ConversationalRetrievalChain, ConversationChain
 from prompt_templates import prompts
 import os
 from langchain_chroma import Chroma
+from langchain_community.vectorstores import FAISS
 from langchain.chains import create_history_aware_retriever
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_retrieval_chain
@@ -29,7 +30,7 @@ session = st.session_state
 # st.title("JLL Assistant")
 
 with st.sidebar:
-    st.image('data/JLL-eee72e7e.png')
+    st.image('data/JLL_solution_dlow-Page-3.drawio.png')
 if 'llm' not in session:
     llm = load_model.load_llm(type='gemini')
 
@@ -57,13 +58,17 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-with st.spinner(text='Loading documents'):
+
+with st.spinner('loading vector store'):
     gemini_embedding = embedding.load_embedding('gemini')
-    embedded_vector_store = Chroma(persist_directory='./data', embedding_function=gemini_embedding)
+    # embedded_vector_store = Chroma(persist_directory='data', embedding_function=gemini_embedding)
+    embedded_vector_store = FAISS.load_local("data/faiss", gemini_embedding, allow_dangerous_deserialization=True)
 
 
 messages = st.container()
 user_input = st.chat_input("Query")
+
+# st.write(embedded_vector_store.as_retriever().invoke('ROLES & SECURITY PROPERTIES'))
 
 if user_input:
 
@@ -104,6 +109,8 @@ if user_input:
 
     output = rag_chain.invoke({"input": user_input, "chat_history": session['chat_history']})
     session['chat_history'].extend([HumanMessage(content=user_input), output["answer"]])
+    session['output'] = output
+    # st.json(session)
 
     session.past.append(user_input)
     session.generated.append(output["answer"])
@@ -118,9 +125,9 @@ if 'generated' in session and user_input:
         # st.json(session)
 
         for idx, doc in enumerate(output['context']):
-            filename = os.path.basename(doc.metadata['file_path'])
-            page_num = doc.metadata['page']
-            ref_title = f":blue[Reference {idx}: *{filename} - page.{page_num}*]"
+            filename = os.path.basename(doc.metadata['source'])
+            # page_num = doc.metadata['page']
+            ref_title = f":blue[Reference {idx}: *{filename}*]"
             with st.popover(ref_title):
                     st.caption(doc.page_content)
 
