@@ -1,10 +1,10 @@
 from splitter import chunk
 from document_loader import loader
 from embedding import embedding
-import pysqlite3
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-from langchain_chroma import Chroma
+# import pysqlite3
+# import sys
+# sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+# from langchain_chroma import Chroma
 from langchain_community.vectorstores import FAISS
 
 def create_vector_store(texts, embedding_type):
@@ -24,7 +24,7 @@ def create_vector_store(texts, embedding_type):
     """
     if embedding_type == 'open_ai':
         openai_embedding = embedding.load_embedding('open_ai')
-        db = Chroma.from_documents(texts, openai_embedding, persist_directory= "vector_store")
+        # db = Chroma.from_documents(texts, openai_embedding, persist_directory= "vector_store")
         return db
     
     elif embedding_type == 'gemini':
