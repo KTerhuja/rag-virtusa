@@ -7,3 +7,4 @@ langchain-openai
 langchain-google-genai
 duckduckgo-search
 faiss-cpu
+streamlit-lottie

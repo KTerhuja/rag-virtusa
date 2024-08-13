@@ -21,6 +21,8 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.messages import HumanMessage
+from streamlit_lottie import st_lottie, st_lottie_spinner
+import requests
 
 
 
@@ -33,6 +35,8 @@ with st.sidebar:
     st.image('data/JLL_solution_dlow-Page-3.drawio.png')
 if 'llm' not in session:
     llm = load_model.load_llm(type='gemini')
+
+
 
 
 
@@ -58,6 +62,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+def render_animation():
+    animation_response = requests.get('https://lottie.host/abc043d0-755d-4913-a3b4-bca255815c77/UQfMOeoNgl.json')
+    animation_json = dict()
+    
+    if animation_response.status_code == 200:
+        animation_json = animation_response.json()
+    else:
+        print("Error in the URL")     
+                           
+    return st_lottie(animation_json, height=75, width=75)
 
 with st.spinner('loading vector store'):
     gemini_embedding = embedding.load_embedding('gemini')
@@ -104,16 +118,23 @@ if user_input:
 
     rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
+    animation_response = requests.get('https://lottie.host/abc043d0-755d-4913-a3b4-bca255815c77/UQfMOeoNgl.json')
+    animation_json = dict()
+    
+    if animation_response.status_code == 200:
+        animation_json = animation_response.json()     
+                        
+    with st_lottie_spinner(animation_json, height=75, width=75):
+    
+        output = rag_chain.invoke({"input": user_input, "chat_history": session['chat_history']})
+        session['chat_history'].extend([HumanMessage(content=user_input), output["answer"]])
+        session['output'] = output
+        # st.json(session)
 
-    # chat_history = []
+        session.past.append(user_input)
+        session.generated.append(output["answer"])
 
-    output = rag_chain.invoke({"input": user_input, "chat_history": session['chat_history']})
-    session['chat_history'].extend([HumanMessage(content=user_input), output["answer"]])
-    session['output'] = output
-    # st.json(session)
-
-    session.past.append(user_input)
-    session.generated.append(output["answer"])
+ 
     
 
 if 'generated' in session and user_input:
