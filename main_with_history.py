@@ -76,7 +76,7 @@ def render_animation():
 with st.spinner('loading vector store'):
     gemini_embedding = embedding.load_embedding('gemini')
     # embedded_vector_store = Chroma(persist_directory='data', embedding_function=gemini_embedding)
-    embedded_vector_store = FAISS.load_local("data/faiss", gemini_embedding, allow_dangerous_deserialization=True)
+    embedded_vector_store = FAISS.load_local("data/jll_poc_vs", gemini_embedding, allow_dangerous_deserialization=True)
 
 
 messages = st.container()
@@ -103,7 +103,8 @@ if user_input:
     )
 
     qa_system_prompt = """You are an assistant for question-answering tasks. \
-    Use the following pieces of retrieved context to answer the question. \
+    Use the following pieces of retrieved context to answer the question.
+    provide as much relevant detail as possible \
     If you don't know the answer, just say that you don't know. \
     {context}"""
     qa_prompt = ChatPromptTemplate.from_messages(
@@ -168,4 +169,4 @@ if 'generated' in session and user_input:
 
  
 
-st.caption("""<style>body {zoom: 80%;}</style>""",unsafe_allow_html=True) 
+# st.caption("""<style>body {zoom: 80%;}</style>""",unsafe_allow_html=True) 
